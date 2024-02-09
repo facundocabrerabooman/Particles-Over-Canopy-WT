@@ -1,7 +1,7 @@
 function bkg = getBkg(subfolders,fname_prefix,Istart,Iend,increment,demosaicpattern)
 
 
-fname = [subfolders filesep fname_prefix filesep 'frame_' num2str(Istart,'%06d') '.tiff' ];
+fname = [subfolders filesep fname_prefix filesep 'B' num2str(Istart,'%05d') '.tif' ];
 
 Im = imread(fname);%,'ppm','uint16');
 cc = class(Im);
@@ -15,7 +15,7 @@ Im = double(0*Im);
 Nim = 0;
 for k = Istart : increment : Iend
     Nim=Nim+1;
-    fname = [subfolders filesep fname_prefix filesep 'frame_' num2str(k,'%06d') '.tiff' ];
+    fname = [subfolders filesep fname_prefix filesep 'B' num2str(k,'%05d') '.tif' ];
     if ~isempty(demosaicpattern)
         Im = Im+double(rgb2gray(demosaic(imread(fname),demosaicpattern)));
     else

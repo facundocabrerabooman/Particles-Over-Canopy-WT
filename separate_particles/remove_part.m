@@ -1,17 +1,18 @@
-function [Imt,Imp] = remove_part(Im,PartRadius)
+function Imp = remove_part(Im,PartRadius)
 %%
-%st = strel('disk',round(PartRadius/2));
+%st = strel('disk',1);
 stdil = strel('disk',round(PartRadius/2));
 
-%Imd = imdilate(imbinarize(imopen(Im,st)),stdil);
-Imp = imdilate(Im,stdil);
-Imt=[];
+%Imd = imdilate(imopen(Im,st),stdil);
+Imd = imdilate(Im,stdil);
+Imp = Imd;
 
 %% refine particle image
-% %Rp=sqrt(numel(find(Imd~=0)))/pi;
 % Rp = PartRadius;
-% Rmin = max(0.2*Rp,1);
-% Rmax = max(3*Rp,14);
+% 
+% Rmin = min(0.1*Rp,2);
+% Rmax = max(4*Rp,10);
+% 
 % [C, R] = imfindcircles(Imd, cast([Rmin Rmax],class(Im)));
 % if size(C,1) == 1
 %     roi=images.roi.Circle('Center',C,'Radius',R);
@@ -20,4 +21,3 @@ Imt=[];
 %     mask = Imd;
 % end
 % Imp = immultiply(Im,cast(mask,class(Im)));
-%Imt = immultiply(Im,cast(abs(1-mask),class(Im)));
