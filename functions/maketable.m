@@ -1,9 +1,6 @@
-function maketable(pdfA,pdfV,pdfVabs, pdfAabs,folderout)
+function maketable(pdfA,pdfV,folderout)
 %Create some example variables and a table
 Name = {'Mean', 'STD' ,'Skewness','Kurtosis'};
-
-Vabs = [pdfVabs.mean, pdfVabs.std ,pdfVabs.skewness, pdfVabs.flatness];
-Aabs = [pdfAabs.mean, pdfAabs.std, pdfAabs.skewness, pdfAabs.flatness];
 
 vx = [pdfV(1).mean, pdfV(1).std ,pdfV(1).skewness, pdfV(1).flatness];
 vy = [pdfV(2).mean, pdfV(2).std, pdfV(2).skewness, pdfV(2).flatness];
@@ -15,7 +12,7 @@ az = [pdfA(3).mean, pdfA(3).std, pdfA(3).skewness, pdfA(3).flatness];
 
 
 % Create a new table with consistent data types and handling of missing values
-T = table(Name', Vabs', Aabs' ,vx', vy', vz', ax', ay', az', 'VariableNames', {'Name', 'Vabs','Aabs','Vx','Vy','Vz','Ax','Ay','Az'});
+T = table(Name',vx', vy', vz', ax', ay', az', 'VariableNames', {'Name','Vx','Vy','Vz','Ax','Ay','Az'});
 
 % Create a figure and display only the table without any axes or labels
 f = figure('Visible', 'on');
