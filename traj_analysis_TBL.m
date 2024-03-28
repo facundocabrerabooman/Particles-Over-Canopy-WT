@@ -3,34 +3,38 @@ clear;clc;close all
 % Set path were functions will be read from
 addpath(genpath('/Users/fcb/Documents/GitHub/Particles-Over-Canopy-WT/'));
 
-fname = 'Particle_Het_Foam_Gap';
+fname = 'Pollen_Het_Foam_Foam_C01';
 
 folderin = '/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/outputs_PTV/Foam/';
 folderout = ['/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/analyses/' ...
-    'Foam/Particle_Het_Foam_Gap/turbulent_boundary_layer/'];
+    'Foam/' fname '/turbulent_boundary_layer/'];
 mkdir(folderout)
 cd(folderout)
 
 Fs=4e3; % Frame rate
+
+%%% Values to Normalize
+L = 30; % canopy height: 30 mm
+V = 1.5e3; % free-stream vel: 1500 mm/s
 
 %% Concatenate data
 
 if pi==pi
     trajs_conc = [];
     
-    load([folderin filesep 'trajsf_Particle_Het_Foam_Gap_C01.mat'])
+    load([folderin filesep 'trajsf_' fname '_C01.mat'])
     trajs_conc = [trajs_conc tracklong];
     
-    load([folderin filesep 'trajsf_Particle_Het_Foam_Gap_C02.mat'])
+    load([folderin filesep 'trajsf_' fname '_C02.mat'])
     trajs_conc = [trajs_conc tracklong];
     
-    load([folderin filesep 'trajsf_Particle_Het_Foam_Gap_C03.mat'])
+    load([folderin filesep 'trajsf_' fname '_C03.mat'])
     trajs_conc = [trajs_conc tracklong];
     
 clear tracklong 
 Ine=find(arrayfun(@(X)(~isempty(X.Vx)),trajs_conc)==1);
 trajs_conc = trajs_conc(Ine);
-save([folderin filesep 'traj_conc_Particle_Het_Foam_Gap'],'trajs_conc','Ine','-v7.3')
+save([folderin filesep 'traj_conc_' fname],'trajs_conc','Ine','-v7.3')
 end
 
 load([folderin filesep 'traj_conc_' fname])
@@ -41,6 +45,30 @@ trajs_conc = trajs_conc(Ine);
 mycolormap = mycolor('#063970','#e28743');%('#063970','#eeeee4','#e28743')
 color3 = [mycolormap(1,:);mycolormap((size(mycolormap,1)+1)/2,:);mycolormap(end,:)];
 color1 = '#476d76';
+
+%% Get rid of background manually 
+disp('Do you want to do this part?')
+%%%
+% 
+% for i=1:numel(trajs_conc)
+% plot3(trajs_conc(i).Xf,trajs_conc(i).Yf,trajs_conc(i).Zf,'.- ');
+% end
+% 
+% xlabel('X (streamwise)')
+% ylabel('Y (vertical - antigravity)')
+% zlabel('Z (spanwise)')
+%%%
+
+trajs_conc_nob = [];
+
+for i=1:numel(trajs_conc)
+    if trajs_conc(i).Xf>-17
+           trajs_conc_nob=vertcat(trajs_conc_nob,trajs_conc(i));
+    end
+end
+
+trajs_conc = trajs_conc_nob;
+
 %% Rotate data to have the vertical on Y and the streamwise direction in X
 
 for i=1:numel(trajs_conc)
@@ -61,15 +89,15 @@ figure(10); clf; hold on; grid on; box on
 %streamw_vel_mean = mean(vertcat(trajs_conc_new_axis.Vx));
 streamw_vel_mean = mean(vertcat(trajs_conc.Vx));
 
-for i=1:numel(trajs_conc_new_axis)
+for i=1:numel(trajs_conc)
 
     %scatter3(trajs_conc_new_axis(i).Xf,trajs_conc_new_axis(i).Yf,trajs_conc_new_axis(i).Zf, 10, trajs_conc_new_axis(i).Vx - streamw_vel_mean, 'filled');
-    scatter3(trajs_conc(i).Xf,trajs_conc(i).Yf,trajs_conc(i).Zf, 10, trajs_conc(i).Vx - streamw_vel_mean, 'filled');
-
+    scatter3(trajs_conc(i).Xf./L,trajs_conc(i).Yf./L,trajs_conc(i).Zf./L, 10, (trajs_conc(i).Vx - streamw_vel_mean)./V, 'filled');
+    
 end
-xlabel('X (streamwise)')
-ylabel('Y (vertical - antigravity)')
-zlabel('Z (spanwise)')
+xlabel('X normalized (streamwise)')
+ylabel('Y normalized (vertical - antigravity)')
+zlabel('Z normalized (spanwise)')
  
 colorbar
 
@@ -83,11 +111,11 @@ figure(2); clf; hold on; grid on; box on
     % histogram(vertcat(trajs_conc.Yf),'FaceColor','g')
     % histogram(vertcat(trajs_conc.Zf),'FaceColor','b')
 
-    histogram(vertcat(trajs_conc_new_axis.Xf),'FaceColor',color3(1,:))
-    histogram(vertcat(trajs_conc_new_axis.Yf),'FaceColor',color3(2,:))
-    histogram(vertcat(trajs_conc_new_axis.Zf),'FaceColor',color3(3,:))
+    histogram(vertcat(trajs_conc_new_axis.Xf)./L,'FaceColor',color3(1,:))
+    histogram(vertcat(trajs_conc_new_axis.Yf)./L,'FaceColor',color3(2,:))
+    histogram(vertcat(trajs_conc_new_axis.Zf)./L,'FaceColor',color3(3,:))
 
-    legend({'x','y','z', 'Streamw', 'Vertical'})
+    legend({'X (normalized)','Y','Z', 'Streamw', 'Vertical'})
 
 savefig_FC('histogram_pos',8,6,'pdf')
 savefig_FC('histogram_pos',8,6,'fig')
@@ -99,11 +127,11 @@ figure(3); clf; hold on; grid on; box on
     % histogram(vertcat(trajs_conc.Vy),'FaceColor','g')
     % histogram(vertcat(trajs_conc.Vz),'FaceColor','b')
 
-    histogram(vertcat(trajs_conc_new_axis.Vx),'FaceColor',color3(1,:))
-    histogram(vertcat(trajs_conc_new_axis.Vy),'FaceColor',color3(2,:))
-    histogram(vertcat(trajs_conc_new_axis.Vz),'FaceColor',color3(3,:))
+    histogram(vertcat(trajs_conc_new_axis.Vx)./V,'FaceColor',color3(1,:))
+    histogram(vertcat(trajs_conc_new_axis.Vy)./V,'FaceColor',color3(2,:))
+    histogram(vertcat(trajs_conc_new_axis.Vz)./V,'FaceColor',color3(3,:))
 
-    legend({'x','y','z', 'Streamw', 'Vertical'})
+    legend({'Vx (normalized)','Vy','Vz', 'Streamw', 'Vertical'})
 
 savefig_FC('histogram_vel',8,6,'pdf')
 savefig_FC('histogram_vel',8,6,'fig')
@@ -114,7 +142,7 @@ figure(4); clf; hold on; grid on; box on
 %streamw_vel_mean = mean(vertcat(trajs_conc_new_axis.Vx));
 streamw_vel_mean = 0;
 
-ybins = (-25:5:20);
+ybins = (-15:5:20);
 
 vels_in_each_bin = cell(1, length(ybins)-1);
 meanvel_in_each_bin = zeros(1, length(ybins)-1);
@@ -151,12 +179,12 @@ end
 meanVy = cell2mat(meanVy);
 countVy = cell2mat(countVy);
 
-bar(ybins(1:end-1), meanVy);
+bar(ybins(1:end-1)./L, meanVy./V);
 hold on;
-errorbar(ybins(1:end-1), meanVy, std(VyBins{j})./sqrt(countVy), 'r.', 'LineWidth', 2);
-xlabel('y (mm)');
+errorbar(ybins(1:end-1)./L, meanVy./V, std(VyBins{j})./sqrt(countVy)./V, 'r.', 'LineWidth', 2);
+xlabel('y (norm)');
 ylabel('Mean Vert Vel');
-title('Mean Value of Vert Vel');
+title('Mean Value of Vert Vel (normalized)');
 
 savefig_FC('vertical_vel_versus_height',8,6,'pdf')
 savefig_FC('vertical_vel_versus_height',8,6,'fig')
@@ -168,7 +196,7 @@ figure(5); clf; hold on; grid on; box on
 
 streamw_vel_mean = mean(vertcat(trajs_conc_new_axis.Vx));
 
-ybins = (-25:5:20);
+ybins = (-15:5:20);
 
 vels_in_each_bin = cell(1, length(ybins)-1);
 meanvel_in_each_bin = zeros(1, length(ybins)-1);
@@ -205,16 +233,17 @@ end
 meanVy = cell2mat(meanVy);
 countVy = cell2mat(countVy);
 
-bar(ybins(1:end-1), meanVy);
+bar(ybins(1:end-1)./L, meanVy./V);
 hold on;
-errorbar(ybins(1:end-1), meanVy, std(VyBins{j})./sqrt(countVy), 'r.', 'LineWidth', 2);
-xlabel('y (mm)');
-ylabel('Mean Streamw Vel');
-title('Mean Value of Streamw Vel');
+errorbar(ybins(1:end-1)./L, meanVy./V, std(VyBins{j})./sqrt(countVy)./V, 'r.', 'LineWidth', 2);
+xlabel('y (norm)');
+ylabel('Mean Streamw Vel ');
+title('Mean Value of Streamw Vel (Norm)');
 
 savefig_FC('streamwise_vel_versus_height',8,6,'pdf')
 savefig_FC('streamwise_vel_versus_height',8,6,'fig')
 
+stop
 %% Gradient (over height) of vertical velocity 
 
 figure(6); clf; hold on; grid on; box on

@@ -3,7 +3,7 @@ clear;clc;close all
 % Set path were functions will be read from
 addpath(genpath('/Users/fcb/Documents/GitHub/Particles-Over-Canopy-WT/'));
 
-fname = 'Particle_Het_Foam_Gap_C01';
+fname = 'Pollen_Het_Foam_Foam_C01.dat';
 
 folderin = '/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/outputs_PTV/Foam/';
 folderout = folderin;
