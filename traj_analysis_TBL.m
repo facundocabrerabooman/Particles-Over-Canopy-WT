@@ -3,11 +3,11 @@ clear;clc;close all
 % Set path were functions will be read from
 addpath(genpath('/Users/fcb/Documents/GitHub/Particles-Over-Canopy-WT/'));
 
-fname = 'Pollen_Het_Foam_Foam_C01';
+fname = 'Particle_Het_Tooth_Tooth';
 
-folderin = '/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/outputs_PTV/Foam/';
+folderin = '/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/outputs_PTV/Toothpick/';
 folderout = ['/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/analyses/' ...
-    'Foam/' fname '/turbulent_boundary_layer/'];
+    'Toothpick/' fname '/turbulent_boundary_layer/'];
 mkdir(folderout)
 cd(folderout)
 
@@ -22,15 +22,17 @@ V = 1.5e3; % free-stream vel: 1500 mm/s
 if pi==pi
     trajs_conc = [];
     
-    load([folderin filesep 'trajsf_' fname '_C01.mat'])
-    trajs_conc = [trajs_conc tracklong];
+    % load([folderin filesep 'trajsf_' fname '_C01.mat'])
+    % trajs_conc = [trajs_conc tracklong];
     
     load([folderin filesep 'trajsf_' fname '_C02.mat'])
     trajs_conc = [trajs_conc tracklong];
-    
-    load([folderin filesep 'trajsf_' fname '_C03.mat'])
-    trajs_conc = [trajs_conc tracklong];
-    
+    % 
+    % load([folderin filesep 'trajsf_' fname '_C03.mat'])
+    % trajs_conc = [trajs_conc tracklong];
+    % 
+    disp('Only C01'); pause(2)
+
 clear tracklong 
 Ine=find(arrayfun(@(X)(~isempty(X.Vx)),trajs_conc)==1);
 trajs_conc = trajs_conc(Ine);
@@ -41,6 +43,7 @@ load([folderin filesep 'traj_conc_' fname])
 
 Ine=find(arrayfun(@(X)(~isempty(X.Vx)),trajs_conc)==1);
 trajs_conc = trajs_conc(Ine);
+
 %%
 mycolormap = mycolor('#063970','#e28743');%('#063970','#eeeee4','#e28743')
 color3 = [mycolormap(1,:);mycolormap((size(mycolormap,1)+1)/2,:);mycolormap(end,:)];
@@ -62,12 +65,26 @@ disp('Do you want to do this part?')
 trajs_conc_nob = [];
 
 for i=1:numel(trajs_conc)
+
     if trajs_conc(i).Xf>-17
+            i/numel(trajs_conc)
            trajs_conc_nob=vertcat(trajs_conc_nob,trajs_conc(i));
     end
 end
 
 trajs_conc = trajs_conc_nob;
+
+%% eliminate elements with no velocity
+trajs_conc_nonan = [];
+
+for i=1:numel(trajs_conc)
+    if ~isnan(trajs_conc(i).Vx)
+         i/numel(trajs_conc)
+           trajs_conc_nonan=vertcat(trajs_conc_nonan,trajs_conc(i));
+    end
+end
+
+trajs_conc = trajs_conc_nonan;
 
 %% Rotate data to have the vertical on Y and the streamwise direction in X
 
@@ -84,13 +101,13 @@ end
 
 %% Plot 3D Trajectories
 
-figure(10); clf; hold on; grid on; box on
+figure(100); clf; hold on; grid on; box on
 
 %streamw_vel_mean = mean(vertcat(trajs_conc_new_axis.Vx));
 streamw_vel_mean = mean(vertcat(trajs_conc.Vx));
 
-for i=1:numel(trajs_conc)
-
+for i=1:numel(trajs_conc)/10
+i
     %scatter3(trajs_conc_new_axis(i).Xf,trajs_conc_new_axis(i).Yf,trajs_conc_new_axis(i).Zf, 10, trajs_conc_new_axis(i).Vx - streamw_vel_mean, 'filled');
     scatter3(trajs_conc(i).Xf./L,trajs_conc(i).Yf./L,trajs_conc(i).Zf./L, 10, (trajs_conc(i).Vx - streamw_vel_mean)./V, 'filled');
     
@@ -100,7 +117,7 @@ ylabel('Y normalized (vertical - antigravity)')
 zlabel('Z normalized (spanwise)')
  
 colorbar
-
+stop
 savefig_FC('traj3D',8,6,'pdf')
 savefig_FC('traj3D',8,6,'fig')
 %% Plot Position Histograms
