@@ -9,7 +9,7 @@ Data analysis of data acquired by 1+ high speed cameras at the wind tunnel in Po
 - Pollen trajectories are analyzed in "traj_analysis_TBL.m" and "traj_analysis_turbulence". Standard turbulence quantities are calculated in these codes, such as probability density functions and structure functions.
  
 ## Screenshots
-![Screenshot](link_to_screenshot)
+![Screenshot](images/ss.png)
 
 ## Installation
 No installation. Download and run on MATLAB.
