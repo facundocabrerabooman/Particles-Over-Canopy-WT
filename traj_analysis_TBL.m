@@ -22,16 +22,15 @@ V = 1.5e3; % free-stream vel: 1500 mm/s
 if pi==pi
     trajs_conc = [];
     
-    % load([folderin filesep 'trajsf_' fname '_C01.mat'])
-    % trajs_conc = [trajs_conc tracklong];
+    load([folderin filesep 'trajsf_' fname '_C01.mat'])
+    trajs_conc = [trajs_conc tracklong];
     
     load([folderin filesep 'trajsf_' fname '_C02.mat'])
     trajs_conc = [trajs_conc tracklong];
-    % 
-    % load([folderin filesep 'trajsf_' fname '_C03.mat'])
-    % trajs_conc = [trajs_conc tracklong];
-    % 
-    disp('Only C01'); pause(2)
+
+    load([folderin filesep 'trajsf_' fname '_C03.mat'])
+    trajs_conc = [trajs_conc tracklong];
+    
 
 clear tracklong 
 Ine=find(arrayfun(@(X)(~isempty(X.Vx)),trajs_conc)==1);
@@ -106,18 +105,24 @@ figure(100); clf; hold on; grid on; box on
 %streamw_vel_mean = mean(vertcat(trajs_conc_new_axis.Vx));
 streamw_vel_mean = mean(vertcat(trajs_conc.Vx));
 
-for i=1:numel(trajs_conc)/10
+for i=1:numel(trajs_conc)
 i
-    %scatter3(trajs_conc_new_axis(i).Xf,trajs_conc_new_axis(i).Yf,trajs_conc_new_axis(i).Zf, 10, trajs_conc_new_axis(i).Vx - streamw_vel_mean, 'filled');
-    scatter3(trajs_conc(i).Xf./L,trajs_conc(i).Yf./L,trajs_conc(i).Zf./L, 10, (trajs_conc(i).Vx - streamw_vel_mean)./V, 'filled');
+    scatter3(trajs_conc_new_axis(i).Xf,trajs_conc_new_axis(i).Yf,trajs_conc_new_axis(i).Zf, 10, (trajs_conc_new_axis(i).Vx - streamw_vel_mean)./V, 'filled');
+    %scatter3(trajs_conc(i).Xf,trajs_conc(i).Yf,trajs_conc(i).Zf, 10, (trajs_conc(i).Vx - streamw_vel_mean)./V, 'filled');
     
 end
-xlabel('X normalized (streamwise)')
-ylabel('Y normalized (vertical - antigravity)')
+xlabel('X/L')
+ylabel('Y/L')
 zlabel('Z normalized (spanwise)')
- 
 colorbar
-stop
+
+cb = colorbar(); 
+ylabel(cb,'(Vx - U)/U','FontSize',20,'Rotation',270)
+ 
+xlim([-30 30])
+
+%stop
+
 savefig_FC('traj3D',8,6,'pdf')
 savefig_FC('traj3D',8,6,'fig')
 %% Plot Position Histograms

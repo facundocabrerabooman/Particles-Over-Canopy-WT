@@ -1,6 +1,5 @@
-function Imp=Ryan_preprocessing(Im,th,part_radius,gain,bkg)
+function Imp=preprocessing(Im,th,part_radius,gain,bkg)
 
-% 03/2019 - Thomas Basset
 %Im = imcomplement(Im);
 
 

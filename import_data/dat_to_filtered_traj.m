@@ -3,7 +3,7 @@ clear;clc;close all
 % Set path were functions will be read from
 addpath(genpath('/Users/fcb/Documents/GitHub/Particles-Over-Canopy-WT/'));
 
-fname = 'Particle_Het_Tooth_Tooth_C02';
+fname = 'Particle_Het_Tooth_Tooth_C03';
 
 folderin = '/Users/fcb/Library/CloudStorage/GoogleDrive-facundo@pdx.edu/My Drive/Canopy Experiment/outputs_PTV/Toothpick';
 folderout = folderin;
@@ -13,7 +13,7 @@ Fs=4e3; % Frame rate
 
 %% Import data
 
-d = dat_to_mat(folderin, [fname '.dat']);
+d = dat_to_mat(folderin, fname);
 %save(fname,'d','-v7.3')
 
 %% Track Particles (i.e. go from particle positions to trajectories)
@@ -84,10 +84,21 @@ lopt = 2;
 
 tracklong=calcVelLEM(traj,wopt,lopt,Fs);
 
-stop
+
 Ine=find(arrayfun(@(X)(~isempty(X.Vx)),tracklong)==1);
 
 tracklong = tracklong(Ine);
 save(['trajsf_' fname '.mat'],'Ine','tracklong','-v7.3')
 
 
+%% Plot 3D
+for i=1:numel(tracklong)
+
+if ~isempty(tracklong(i).Vx)
+    i
+    scatter3(tracklong(i).Xf,tracklong(i).Yf,tracklong(i).Zf, 10, tracklong(i).Vx, 'filled');
+    hold on
+end
+end
+
+colorbar

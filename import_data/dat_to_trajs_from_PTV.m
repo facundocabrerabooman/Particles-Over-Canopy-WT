@@ -13,7 +13,7 @@ Fs=4e3; % Frame rate
 
 %% Import data
 
-d = dat_to_mat(folderin, [fname '.dat']);
+d = dat_to_mat(folderin, fname);
 %save(fname,'d','-v7.3')
 
 %% Convert to structure
@@ -30,6 +30,7 @@ tracklong.Ax = d(:,8);
 tracklong.Ay = d(:,9);
 tracklong.Az = d(:,10);
 
+stop
 save(['trajsf_' fname '.mat'],'Ine','tracklong','-v7.3')
 
 
